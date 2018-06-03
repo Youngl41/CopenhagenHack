@@ -102,3 +102,19 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Data
+Data/
+
+# Jupyter notebooks
+**/*.ipynb
+
+# Test files
+**/test.py
+**/test*.py
+
+# Temporary files created by python
+**/*.pyc
+
+# Mac temporary files
+**/.DS_Store
