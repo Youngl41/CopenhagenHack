@@ -27,7 +27,8 @@ from fiona import collection
 from descartes import PolygonPatch
 
 from matplotlib.collections import PatchCollection
-from shapely.geometry import Polygon, MultiPolygon, shape
+from shapely.geometry import Polygon, MultiPolygon, shape, Point
+
 
 # Convert geometries to shapes
 def convert2shape(geom):

@@ -23,7 +23,7 @@ from fiona import collection
 from descartes import PolygonPatch
 
 from matplotlib.collections import PatchCollection
-from shapely.geometry import Polygon, MultiPolygon, shape
+from shapely.geometry import Polygon, MultiPolygon, shape, Point
 
 # Custom utility functions
 util_dir = '/Users/Hackathon/CopenhagenHack/Scripts/Utility Functions'
@@ -41,11 +41,13 @@ from munge_util import chunk_items
 # =============================================================================
 # Paths
 main_dir = '/Users/Hackathon/CopenhagenHack/Data/Copenhagen-shp/shape'
+data_dir = '/Users/Hackathon/CopenhagenHack/Data'
 roads_shp_path = os.path.join(main_dir, 'roads.shp')
 buildings_shp_path = os.path.join(main_dir, 'buildings.shp')
 natural_shp_path = os.path.join(main_dir, 'natural.shp')
 landuse_shp_path = os.path.join(main_dir, 'landuse.shp')
 railways_shp_path = os.path.join(main_dir, 'railways.shp')
+loc_path = os.path.join(data_dir, 'clean_loc.csv')
 
 # Load data
 roads_shp = fiona.open(roads_shp_path)
@@ -53,6 +55,7 @@ buildings_shp = fiona.open(buildings_shp_path)
 natural_shp = fiona.open(natural_shp_path)
 landuse_shp = fiona.open(landuse_shp_path)
 railways_shp = fiona.open(railways_shp_path)
+loc_pdf = pd.read_csv(loc_path)
 
 # DMA properties
 roads_props = [pol['properties'] for pol in roads_shp]
@@ -94,3 +97,13 @@ dict_of_multi_polygons = {'Roads': roads_polys,
                           'Railways': railways_polys,
                           }
 plot_shapes(dict_of_multi_polygons=dict_of_multi_polygons, figsize=(10,7))
+
+loc_pdf.loc[:, 'point'] = list(map(lambda x: Point(x[0], x[1]), np.array(loc_pdf[['longitude', 'latitude']])))
+loc_pdf
+
+list(map(lambda x: Point(x[0], x[1]), np.array(loc_pdf[['longitude', 'latitude']].iloc[:2000])))
+
+loc_pdf['longitude'].to
+list(map(lambda x: float(x), loc_pdf['longitude']))
+loc_pdf['latitude']
+
