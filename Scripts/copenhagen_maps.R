@@ -12,8 +12,8 @@ data <- data.frame(coordinates)
 
 
 
-copenhagen_map <- get_map(location = "copenhagen", zoom = 10, scale = 6, maptype = 'roadmap', color='bw')
-mapping <- ggmap(copenhagen_map, extent = "device")
+copenhagen_map <- get_googlemap(center = "copenhagen", zoom = 16, scale = 3, maptype = 'roadmap', color='bw')
+mapping <- ggmap(copenhagen_map)
 
 
 # VERY FIRST ATTEMPT
