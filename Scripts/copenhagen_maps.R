@@ -12,12 +12,12 @@ data <- data.frame(coordinates)
 
 
 
-copenhagen_map <- get_googlemap(center = "copenhagen", zoom = 16, scale = 3, maptype = 'roadmap', color='bw')
-mapping <- ggmap(copenhagen_map)
+copenhagen_map <- get_googlemap(center = "copenhagen", zoom = 12, scale = 2, maptype = 'roadmap', color='bw')
+copenhagen_map <- ggmap(copenhagen_map)
 
 
 # VERY FIRST ATTEMPT
-mapping + geom_point(aes(x = longitude, y = latitude), 
+copenhagen_map + geom_point(aes(x = longitude, y = latitude), 
                    colour = "red", 
                    na.rm = TRUE,
                    size = 2, 
@@ -26,7 +26,7 @@ mapping + geom_point(aes(x = longitude, y = latitude),
 
 # FIRST ATTEMPT
 copenhagen_map +
-  stat_density2d(aes(x = lon, y = lat, fill = ..level.., alpha = ..level..),
+  stat_density2d(aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..),
                  size = 2, 
                  bins = 30, 
                  data = data, 
@@ -40,7 +40,7 @@ copenhagen_map +
 
 # SECOND ATTEMPT
 copenhagen_map +
-  stat_density2d(aes(x = lon, y = lat, fill = ..level.., alpha = ..level..),
+  stat_density2d(aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..),
                  size = 2, 
                  bins = 200, 
                  data = data, 
@@ -53,7 +53,7 @@ copenhagen_map +
 
 # ANOTHER ATTEMPT
 copenhagen_map +
-  stat_density2d(aes(x = lon, y = lat, fill = ..level.., alpha = ..level..),
+  stat_density2d(aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..),
                  size = 2, 
                  bins = 200, 
                  data = data, 
@@ -68,7 +68,7 @@ copenhagen_map +
 
 # THIRD ATTEMPT
 copenhagen_map +
-  stat_density2d(aes(x = lon, y = lat, fill = ..level.., alpha = ..level..),
+  stat_density2d(aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..),
                  bins = 100, 
                  geom = "polygon",
                  data = data,
@@ -80,25 +80,25 @@ copenhagen_map +
 # when alpha set to count then the more tweets, the less opacity
 # FOURTH ATTEMPT
 copenhagen_map +
-  geom_bin2d(aes(x = lon, y = lat, fill = ..count.., alpha = ..count..), 
+  geom_bin2d(aes(x = longitude, y = latitude, fill = ..count..), 
            data = data, 
            stat = "bin2d",
            position = "identity",
-           bins = 50,
+           bins = 20,
            na.rm = TRUE, 
            show.legend = FALSE) +
-  scale_fill_distiller("Tweets Count", palette = "YlOrRd") +
+  scale_fill_distiller("Tweets Count", palette = "RdBu") +
   theme_nothing(legend = TRUE) +
   guides(fill = guide_colorbar(barwidth = 1.5, barheight = 5))
 
 
 # FIFTH ATTEMPT - set fill to log and edited opacity
 copenhagen_map + 
-  geom_bin2d(aes(x = lon, y = lat, fill = log(..count..), alpha = 1), 
+  geom_bin2d(aes(x = longitude, y = latitude, fill = log(..count..), alpha = 1), 
              data = data, 
              stat = "bin2d",
              position = "identity",
-             bins=60,
+             bins=10,
              na.rm = TRUE, 
              show.legend = FALSE) + 
   scale_fill_gradient("log(tweet count)",space="Lab", low = "#bcbddc", high = "#3f007d") + 
@@ -109,7 +109,7 @@ copenhagen_map +
 
 # SIXTH ATTEMPT
 copenhagen_map + 
-  geom_bin2d(aes(x = lon, y = lat, fill = ..count.., alpha = ..count..), 
+  geom_bin2d(aes(x = longitude, y = latitude, fill = ..count.., alpha = ..count..), 
              data = data, 
              stat = "bin2d",
              position = "identity",
