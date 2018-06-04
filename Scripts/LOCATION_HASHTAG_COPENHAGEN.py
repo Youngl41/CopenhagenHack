@@ -40,7 +40,6 @@ def submitToDatabase(query, query_values, connection):
     return answer
 
 
-    
 def normalizeText(tweet_text):
     str_text = tweet_text
     normalizedText = '\'' + str_text.replace("'", r"''") + '\''
@@ -59,7 +58,7 @@ if __name__ == "__main__":
 
     
     # Create the DataBase
-    database_create = "CREATE DATABASE copenhagen_hackathon WITH OWNER = postgres ENCODING = 'UTF8' TABLESPACE = pg_default;"
+    database_create = "CREATE DATABASE copenhagen_hack WITH OWNER = mia ENCODING = 'UTF8' TABLESPACE = pg_default;"
     
     # Submit CREATE  database     
     submitToDatabase(database_create, (), raw_connection)
@@ -70,7 +69,7 @@ if __name__ == "__main__":
     twitter_users_create = "CREATE TABLE IF NOT EXISTS twitter_users (id serial PRIMARY KEY, user_id char(50) NOT NULL, user_name char(50) NOT NULL, screen_name char(50) NOT NULL, followers_count int NOT NULL, friends_count int NOT NULL);"
     
     # Submit CREATE tables
-    database_connection = getDatabase("copenhagen_hackathon")
+    database_connection = getDatabase("copenhagen_hack")
     submitToDatabase(tweet_table_create, (), database_connection)
     submitToDatabase(twitter_users_create, (), database_connection)
 
@@ -81,16 +80,10 @@ if __name__ == "__main__":
     twitter_stream = TwitterStream(auth=oauth)
     
     # Get a sample of the public data following through Twitter (just Europe)
-    iterator = twitter_stream.statuses.filter(locations= "-8.5,48.5,2.5,60.5")
+    iterator = twitter_stream.statuses.filter(locations= "12.4529,55.6150,12.6507,55.7326")
     
     # http://isithackday.com/geoplanet-explorer/index.php? Order: SW 2nd value, SW 1st value, NE 2nd value, NE 1st value
-    # NE 81.008797, 39.869301
-    # SW 27.636311, -31.266001
-    # Europe
-
-
-    # NE 60.854691, 1.76896
-    # SW 49.16209, -13.41393
+    # Copenhagen 12.4529, 55.6150, 12.6507, 55.7326
 
 
 
@@ -106,19 +99,17 @@ if __name__ == "__main__":
             # Set a timestamp for the filename later
             timestamp = datetime.date.today()
             timestamp = str(timestamp)
-            #print timestamp
         
             # Dump tweet as json into data
             backup_data = json.dumps(tweet)
             backup_data = backup_data.lower()
         
             # Print the tweets so you see something happening
-            #print backup_data
             
             if 'copenhagen' in backup_data: 
                 print (backup_data)
                 # Open file and dump data into it
-                with open(timestamp + '_' + 'copenhagen.txt', 'a') as outfile:
+                with open('/Users/Hackathon/CopenhagenHack/Data/' + timestamp + '_' + 'copenhagen.txt', 'a') as outfile:
                     outfile.write(backup_data + '\n')
             
                 # Close file to avoid conflict
@@ -130,119 +121,62 @@ if __name__ == "__main__":
             data = json.loads(timelineTweetsJson)
     
             # Capture tweet text
-            if 'copenhagen' in data:
                 
-                tweet_text = data['text'].lower()
-                tweet_text = unicodedata.normalize('NFKD', tweet_text).encode('ascii','ignore').strip('"')
-                if len(tweet_text) > 160:
-                    tweet_text = tweet_text[0:160]
-       
-       
-                # The following objects are nullable
-                if data['entities']['urls'] != []:
-                    url = data['entities']['urls'][0]['expanded_url']
-                    url = str(url)
-                    if len(url) > 160 :
-                        url = data['entities']['urls'][0]['url']
-                else:
-                    url = str('').encode('ascii','ignore')
-                
-                # Obtain hashtags
-                if data['entities']['hashtags'] !=[]:
-                    hashtags = [];
-                    for i in range(0,len(data['entities']['hashtags'])):              
-                        hashtags.append(data['entities']['hashtags'][i]['text'].lower())
-                else:
-                    hashtags = str('')
-                
-                # Obtain coordinates
-                if data['coordinates'] != None: 
-                    latitude = data['coordinates']['coordinates'][1]
-                else:
-                    latitude = float(0)
-                if data['coordinates'] != None: 
-                    longitude = data['coordinates']['coordinates'][0]
-                else:
-                    longitude = float(0)
-                    
-                # Obtain time
-                created_at = data['timestamp_ms']
-                created_at = int(created_at)
-                
-                userid = data['user']['id']
-                
-                username = data['user']['name'].lower()
-                username = unicodedata.normalize('NFKD', username).encode('ascii','ignore').strip('"')
-                
+            tweet_text = data['text'].lower()
+            tweet_text = unicodedata.normalize('NFKD', tweet_text).encode('ascii','ignore').strip('"')
+            if len(tweet_text) > 160:
+                tweet_text = tweet_text[0:160]
 
-                # Distinguish between good tweets and bad tweets
-                # Test whether a substring is in tweet text, can be replaced by ALL
-                #if 'earth' in [data['text'],username, data['user']['screen_name'], hashtags]:
-                if 'copenhagen' in data['text'].lower():
-                    
-                    
-                    values_tweets = userid, tweet_text, url, latitude, longitude, created_at, data['retweet_count'], hashtags
-                    query_tweets = "INSERT INTO tweets (user_id, text, URL, latitude, longitude, created_at, retweet_count, hashtags) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s);" 
-                    submitToDatabase(query_tweets, values_tweets, database_connection) #query, query values, connect
-                
-                
-                    # Set query values for user table
-                    values_users = userid, username, data['user']['screen_name'], data['user']['followers_count'], data['user']['friends_count']
-                    query_users = "INSERT INTO twitter_users (user_id, user_name, screen_name, followers_count, friends_count) VALUES (%s, %s, %s, %s, %s);" 
-                    submitToDatabase(query_users, values_users, database_connection) #query, query values, connect
-                elif 'copenhagen' in username:
-                    print ('\n')
-                    print ('found one \n')
-                    
-                    
-                    values_tweets = userid, tweet_text, url, latitude, longitude, created_at, data['retweet_count'], hashtags
-                    query_tweets = "INSERT INTO tweets (user_id, text, URL, latitude, longitude, created_at, retweet_count, hashtags) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s);" 
-                    submitToDatabase(query_tweets, values_tweets, database_connection) #query, query values, connect
-                
-                
-                    # Set query values for user table
-                    values_users = userid, username, data['user']['screen_name'], data['user']['followers_count'], data['user']['friends_count']
-                    query_users = "INSERT INTO twitter_users (user_id, user_name, screen_name, followers_count, friends_count) VALUES (%s, %s, %s, %s, %s);" 
-                    submitToDatabase(query_users, values_users, database_connection) #query, query values, connect
-                
-                elif 'copenhagen' in data['user']['screen_name'].lower():
-            
-                    print ('found one \n')
-                    
-                    
-                    values_tweets = userid, tweet_text, url, latitude, longitude, created_at, data['retweet_count'], hashtags
-                    query_tweets = "INSERT INTO tweets (user_id, text, URL, latitude, longitude, created_at, retweet_count, hashtags) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s);" 
-                    submitToDatabase(query_tweets, values_tweets, database_connection) #query, query values, connect
-                
-                
-                    # Set query values for user table
-                    values_users = userid, username, data['user']['screen_name'], data['user']['followers_count'], data['user']['friends_count']
-                    query_users = "INSERT INTO twitter_users (user_id, user_name, screen_name, followers_count, friends_count) VALUES (%s, %s, %s, %s, %s);" 
-                    submitToDatabase(query_users, values_users, database_connection) #query, query values, connect
-               
-                  
-                else:
-                    pass
-                
-                
+            # The following objects are nullable
+            if data['entities']['urls'] != []:
+                url = data['entities']['urls'][0]['expanded_url']
+                url = str(url)
+                if len(url) > 160 :
+                    url = data['entities']['urls'][0]['url']
             else:
-                pass
+                url = str('').encode('ascii','ignore')
+            
+            # Obtain hashtags
+            if data['entities']['hashtags'] !=[]:
+                hashtags = [];
+                for i in range(0,len(data['entities']['hashtags'])):              
+                    hashtags.append(data['entities']['hashtags'][i]['text'].lower())
+            else:
+                hashtags = str('')
+            
+            # Obtain coordinates
+            if data['coordinates'] != None: 
+                latitude = data['coordinates']['coordinates'][1]
+            else:
+                latitude = float(0)
+            if data['coordinates'] != None: 
+                longitude = data['coordinates']['coordinates'][0]
+            else:
+                longitude = float(0)
+                
+            # Obtain time
+            created_at = data['timestamp_ms']
+            created_at = int(created_at)
+            
+            userid = data['user']['id']
+            
+            username = data['user']['name'].lower()
+            username = unicodedata.normalize('NFKD', username).encode('ascii','ignore').strip('"')
+            
+            
+            # Set query values for tweets table
+            values_tweets = userid, tweet_text, url, latitude, longitude, created_at, data['retweet_count'], hashtags
+            query_tweets = "INSERT INTO tweets (user_id, text, URL, latitude, longitude, created_at, retweet_count, hashtags) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s);" 
+            submitToDatabase(query_tweets, values_tweets, database_connection)
+                
+                
+            # Set query values for user table
+            values_users = userid, username, data['user']['screen_name'], data['user']['followers_count'], data['user']['friends_count']
+            query_users = "INSERT INTO twitter_users (user_id, user_name, screen_name, followers_count, friends_count) VALUES (%s, %s, %s, %s, %s);" 
+            submitToDatabase(query_users, values_users, database_connection)
             
             
         except (RuntimeError, TypeError, NameError):
             pass
                 
-                   
-                       #changed userid field, change len url changed len text , added location created at tuple, changed outfile write (make sure it is printing different lines)
-
-                
-            
-
-
-        
- 
-
-
-    
-
 
