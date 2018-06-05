@@ -54,6 +54,12 @@ loc_pdf = loc_pdf[['timestamp', 'longitude', 'latitude', 'country',
 # Drop duplicates
 loc_pdf = loc_pdf.drop_duplicates()
 
+# Restrict it to Copenhagen
+loc_pdf = loc_pdf[(loc_pdf['longitude'] >= 12.4529) &
+        (loc_pdf['longitude'] < 12.6507) &
+        (loc_pdf['latitude'] >= 55.6150) &
+        (loc_pdf['latitude'] < 55.7326)]
+
 # Convert time string into datetime time tuple
 #t = loc_pdf.timestamp.iloc[0]
 loc_pdf.loc[:, 'time_tuple'] = list(map(lambda time_str: datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.000Z"), loc_pdf.loc[:, 'timestamp']))
@@ -69,6 +75,12 @@ latest_customer_lang_pdf = latest_customer_lang_pdf.reset_index(drop=True)
 # Remove language
 loc_pdf = loc_pdf[['unique_id', 'time_tuple', 'longitude', 'latitude']]
 loc_pdf = loc_pdf.reset_index(drop=True)
+
+# Get other time formats
+loc_pdf.loc[:, 'datetime'] = pd.to_datetime(loc_pdf.time_tuple)
+loc_pdf.loc[:, 'hour'] = loc_pdf.datetime.dt.hour
+loc_pdf.loc[:, 'date'] = loc_pdf.datetime.dt.date
+loc_pdf = loc_pdf[['unique_id', 'time_tuple', 'datetime', 'date', 'hour', 'longitude', 'latitude']]
 
 # Save data
 loc_pdf.to_csv(loc_save_path, index=False)
