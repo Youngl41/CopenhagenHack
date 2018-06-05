@@ -24,8 +24,23 @@ from matplotlib.collections import PatchCollection
 # Custom utility functions
 util_dir = '/Users/Hackathon/CopenhagenHack/Scripts/Utility Functions'
 sys.path.append(util_dir)
-from geo_util import hav_dist
+
+# =============================================================================
+# Utility Functions
+# =============================================================================
+# Haversine distance
+def hav_dist(long1, lat1, long2, lat2):
+    long1_ = long1 * np.pi / 180
+    lat1_ = lat1 * np.pi / 180
+    long2_ = long2 * np.pi / 180
+    lat2_ = lat2 * np.pi / 180
+    r = 6371000
+    def hav(angle):
+        return np.sin(angle/2.0)**2
     
+    dist = 2 * r * np.arcsin(np.sqrt(hav(lat2_ - lat1_) + np.cos(lat1_) * np.cos(lat2_) * hav(long2_ - long1_)))
+    return dist
+
 
 # =============================================================================
 # Load Data
