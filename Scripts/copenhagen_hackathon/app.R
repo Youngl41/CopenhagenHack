@@ -6,13 +6,14 @@
 #
 #    http://shiny.rstudio.com/
 #
-
+library(readr)
 library(shiny)
 library(leaflet)
 library(RColorBrewer)
 library(scales)
 library(lattice)
 library(dplyr)
+library(htmltools)
 
 
 # Define UI for application that draws a histogram
@@ -42,27 +43,48 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
+
+  person <- read_csv('/Users/Hackathon/CopenhagenHack/Working/temp_person_coord.csv', col_types = ('ddcccd'))
+  person <- data.frame(person)
   
-  coordinates <-  read_csv('/Users/mia/Downloads/clean_sample_loc.csv', col_names = TRUE, col_types = "ccdd")
-  coordinates$time_tuple <- strptime(coordinates$time_tuple, format = "%Y-%m-%d %H:%M:%S")
-  
+  coordinates <-  read_csv('/Users/Hackathon/CopenhagenHack/Working/temp_output.csv', col_names = TRUE)
+  #coordinates$time_tuple <- strptime(coordinates$time_tuple, format = "%Y-%m-%d %H:%M:%S")
   #coordinates <- coordinates[coordinates$time_tuple > input$start & coordinates$time_tuple < input$end,]
 
-  data <- data.frame(coordinates)
+  coordinates <- data.frame(coordinates)
+  
+
+  
   
   map <- leaflet() %>%
          addTiles() %>% 
          addProviderTiles(providers$CartoDB.Positron) %>% 
-         setView(12.5683,55.6761, zoom = 15) %>% 
+         setView(person$longitude, person$latitude, zoom = 15) %>%
+         addMarkers(
+                          lat = person$latitude,
+                          lng = person$longitude) %>%
          addCircleMarkers(radius = 5,
                           stroke = FALSE, 
                           fillOpacity = 0.5,
-                          color = "red",
+                          color = "blue",
                           clusterOptions = markerClusterOptions(), 
-                          data$longitude, 
-                          data$latitude, 
-                          popup = data$unique_id)
-  
+                          coordinates$lng, 
+                          coordinates$lat, 
+                          popup = paste(sep = "<br/>",
+                                        paste("<b><a href='", 
+                                              coordinates$website, 
+                                              "'>", 
+                                              coordinates$name, 
+                                              "</a></b>", sep = ""),
+                                        paste('Rating: ', coordinates$rating, sep = ""),
+                                        paste('Business: ', coordinates$traffic_class, sep = ""),
+                                        paste('Visited: ', coordinates$visited_already, sep = ""),
+                                        paste('Proximity: ', coordinates$proximity, sep = ""),
+                                        paste('Overall Sentiment:', coordinates$overall_sentiment_score, sep = ""),
+                                        paste('Twitter Sentiment:', coordinates$overall_twitter_sentiment, sep = "")
+                                        ))
+
+                          
   output$myMap = renderLeaflet(map)
   }
 
