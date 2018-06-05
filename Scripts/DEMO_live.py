@@ -98,7 +98,7 @@ segment_list = ['Family Person', 'Businessman',
                 'Highly Active Instagramer', 
                 'Teenager (on school trip)',
                 'Couple',
-                'Wealthy Traveller',
+                'Wealthy Traveler',
                 'Local',
                 'Businesswoman']
 segment = np.random.choice(segment_list)
