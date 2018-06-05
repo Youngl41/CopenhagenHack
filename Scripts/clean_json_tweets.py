@@ -12,6 +12,7 @@ Created on Mon Jun  4 14:48:34 2018
 import json
 import pandas as pd
 import datetime
+import os
 
 data_path = '/Users/Hackathon/CopenhagenHack/Data/2018-06-04_copenhagen.txt'
 
@@ -93,5 +94,5 @@ if __name__ == '__main__':
     timestamp = str(timestamp)
             
             
-    processed_tweet_pdf.to_csv('/Users/Hackathon/CopenhagenHack/Data/' + timestamp + '_' + 'copenhagen.csv')
+    processed_tweet_pdf.to_csv('/Users/Hackathon/CopenhagenHack/Data/' + os.path.basename(data_path).split('_')[0] + '_' + 'copenhagen.csv')
 
