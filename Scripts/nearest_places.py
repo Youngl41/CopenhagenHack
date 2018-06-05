@@ -18,26 +18,13 @@ from pprint import pprint
 from collections import Counter
 
 # Import geospatial modules
-import fiona
-import PIL.Image as im
 import matplotlib.pyplot as plt
-
-from fiona import collection
-from descartes import PolygonPatch
-
 from matplotlib.collections import PatchCollection
-from shapely.geometry import Polygon, MultiPolygon, shape, Point
 
 # Custom utility functions
 util_dir = '/Users/Hackathon/CopenhagenHack/Scripts/Utility Functions'
 sys.path.append(util_dir)
-from gen_util import save_data
-from gen_util import load_data
 from geo_util import hav_dist
-from geo_util import plot_shapes
-from geo_util import convert2shape
-from geo_util import map_pipe_props_to_pandas
-from munge_util import chunk_items
     
 
 # =============================================================================
