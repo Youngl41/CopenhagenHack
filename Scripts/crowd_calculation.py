@@ -128,3 +128,8 @@ def map_crowdy_calc(value):
 crowdy_pdf.loc[:, 'traffic'] = crowdy_pdf.loc[:, 'num_users'] / crowdy_pdf.loc[:, 'capacity']
 crowdy_pdf.loc[:, 'traffic_class'] = list(map(lambda x: map_crowdy_calc(x), crowdy_pdf.loc[:, 'traffic']))
 
+working_dir = '/Users/Hackathon/CopenhagenHack/Data/Working'
+crowdy_pdf.to_csv(os.path.join(working_dir, 'crowdiness.csv'), index=False)
+
+
+
