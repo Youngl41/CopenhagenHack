@@ -45,7 +45,7 @@ from munge_util import chunk_items
 # =============================================================================
 # Paths
 main_dir = '/Users/Hackathon/CopenhagenHack/Data/Copenhagen-shp/shape'
-working_dir = '/Users/Hackathon/CopenhagenHack/Data/Working'
+working_dir = '/Users/Hackathon/CopenhagenHack/Working'
 
 #loc_path = os.path.join(data_dir, 'clean_loc.csv')
 google_places_path = os.path.join(working_dir, 'clean_google_places.csv')
