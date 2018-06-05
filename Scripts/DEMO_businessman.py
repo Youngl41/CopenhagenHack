@@ -47,9 +47,9 @@ def hav_dist(long1, lat1, long2, lat2):
 # Check if name is inside the list of names
 def check_name(name, list_of_names):
     if name in list_of_names:
-        return 1
+        return 'Yes'
     else:
-        return 0
+        return 'No'
 
 # =============================================================================
 # Load Data
