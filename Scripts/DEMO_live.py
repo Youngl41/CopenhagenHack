@@ -7,8 +7,12 @@ Created on Tue Jun  5 12:42:20 2018
 """
 
 # Custom location
-longitude = 12.6012
-latitude = 55.67274264022657
+
+# Range longitude:
+# Range latitude: 
+
+longitude = 12.61
+latitude = 55.69
 
 # Import general modules
 import os
