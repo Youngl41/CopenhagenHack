@@ -111,7 +111,8 @@ nearby_places_now_pdf = pd.merge(closest_places_pdf, filtered_crowdiness_pdf, on
 nearby_places_now_pdf = nearby_places_now_pdf[['formatted_address',
        'formatted_phone_number', 'icon',
        'international_phone_number', 'name', 'opening_hours', 'photos',
-       'rating', 'reviews', 'types', 'url', 'vicinity', 'website', 'lng',
+       'rating', 'reviews', 'types', 'url', 'vicinity', 'website', 'neg_sentiment', 'neu_sentiment', 'pos_sentiment',
+       'overall_sentiment_score', 'tweet_text', 'overall_twitter_sentiment', 'lng',
        'lat', 'proximity', 'capacity', 'num_users', 'traffic',
        'traffic_class']]
 nearby_places_now_pdf.loc[:, 'visited_already'] = list(map(lambda x: check_name(x, visited_places), nearby_places_now_pdf.loc[:, 'name']))
@@ -161,7 +162,8 @@ nearby_places_now_pdf = pd.merge(closest_places_pdf, filtered_crowdiness_pdf, on
 nearby_places_now_pdf = nearby_places_now_pdf[['formatted_address',
        'formatted_phone_number', 'icon',
        'international_phone_number', 'name', 'opening_hours', 'photos',
-       'rating', 'reviews', 'types', 'url', 'vicinity', 'website', 'lng',
+       'rating', 'reviews', 'types', 'url', 'vicinity', 'website', 'neg_sentiment', 'neu_sentiment', 'pos_sentiment',
+       'overall_sentiment_score', 'tweet_text', 'overall_twitter_sentiment', 'lng',
        'lat', 'proximity', 'capacity', 'num_users', 'traffic',
        'traffic_class']]
 nearby_places_now_pdf.loc[:, 'visited_already'] = list(map(lambda x: check_name(x, visited_places), nearby_places_now_pdf.loc[:, 'name']))
