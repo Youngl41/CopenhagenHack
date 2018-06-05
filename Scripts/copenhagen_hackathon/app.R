@@ -67,7 +67,14 @@ server <- function(input, output) {
                           stroke = FALSE, 
                           fillOpacity = 0.5,
                           color = "blue",
-                          clusterOptions = markerClusterOptions(), 
+                          clusterOptions = markerClusterOptions(iconCreateFunction =
+                                                                  JS("
+                                                                     function(cluster) {
+                                                                     return new L.DivIcon({
+                                                                     html: '<div style=\"background-color:rgba(77,77,77,0.5)\"><span>' + cluster.getChildCount() + '</div><span>',
+                                                                     className: 'marker-cluster'
+                                                                     });
+                                                                     }")), 
                           coordinates$lng, 
                           coordinates$lat, 
                           popup = paste(sep = "<br/>",
@@ -77,11 +84,12 @@ server <- function(input, output) {
                                               coordinates$name, 
                                               "</a></b>", sep = ""),
                                         paste('Rating: ', coordinates$rating, sep = ""),
-                                        paste('Business: ', coordinates$traffic_class, sep = ""),
+                                        paste('Availability: ', coordinates$traffic_class, sep = ""),
                                         paste('Visited: ', coordinates$visited_already, sep = ""),
-                                        paste('Proximity: ', coordinates$proximity, sep = ""),
-                                        paste('Overall Sentiment:', coordinates$overall_sentiment_score, sep = ""),
-                                        paste('Twitter Sentiment:', coordinates$overall_twitter_sentiment, sep = "")
+                                        paste('Proximity: ', round(coordinates$proximity, 0), ' m', sep = ""),
+                                        paste('Overall Sentiment: ', coordinates$overall_sentiment_score, sep = ""),
+                                        paste('Traffic: ', coordinates$traffic, sep = ""),
+                                        paste('Tweets: ', coordinates$tweet_text, sep = "")
                                         ))
 
                           
@@ -91,4 +99,6 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+
 
