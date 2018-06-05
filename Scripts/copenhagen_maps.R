@@ -7,6 +7,7 @@ library(plotly)
 
 coordinates <-  read_csv('/Users/mia/Downloads/clean_sample_loc.csv', col_names = TRUE, col_types = "ccdd")
 
+coordinates$time_tuple <- strptime(coordinates$time_tuple, format = "%Y-%m-%d %H:%M:%S")
 
 data <- data.frame(coordinates)
 

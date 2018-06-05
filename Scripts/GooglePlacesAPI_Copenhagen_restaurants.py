@@ -124,7 +124,7 @@ if __name__ == '__main__':
     
     circle_centres = []
     
-    step_total = math.ceil((10)/r) # km, London = 16-24km diameter
+    step_total = math.ceil((5)/r) # km, London = 16-24km diameter
     
     
     lat_conversion = 360/(2*math.pi * 6372 * math.cos(long/180*math.pi))
@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
     # Put circle centre coordinates into dataframe
     circles = pd.DataFrame(circle_centres)
-    circles.to_csv('/Users/Hackathon/CopenhagenHack/Data/circles.csv')
+    circles.to_csv('/Users/Hackathon/CopenhagenHack/Data/circles_restaurants.csv')
     
 
     
@@ -169,7 +169,7 @@ if __name__ == '__main__':
     google_operator_df = pd.concat([google_operator_df.drop(['result'], axis=1), google_operator_df['result'].apply(pd.Series)], axis=1)
 
 
-    google_operator_df.to_csv('/Users/Hackathon/CopenhagenHack/Data/google_places_details.csv')
+    google_operator_df.to_csv('/Users/Hackathon/CopenhagenHack/Data/google_restaurant_details.csv')
 
 
 

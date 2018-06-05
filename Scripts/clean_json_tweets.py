@@ -10,7 +10,10 @@ Created on Mon Jun  4 14:48:34 2018
 # Import Modules
 # =============================================================================
 import json
-data_path = '/Users/Young/Downloads/2018-06-04_copenhagen.txt'
+import pandas as pd
+import datetime
+
+data_path = '/Users/Hackathon/CopenhagenHack/Data/2018-06-04_copenhagen.txt'
 
 
 # =============================================================================
@@ -84,5 +87,11 @@ if __name__ == '__main__':
     # Convert to PDF
     processed_tweet_pdf = pd.DataFrame(list_of_results)
     processed_tweet_pdf.columns = ['userid', 'username', 'screen_name', 'followers_count', 'friends_count', 'tweet_text', 'url', 'latitude', 'longitude', 'created_at', 'retweet_count', 'hashtags']
-
+    
+    # Set a timestamp for the filename later
+    timestamp = datetime.date.today()
+    timestamp = str(timestamp)
+            
+            
+    processed_tweet_pdf.to_csv('/Users/Hackathon/CopenhagenHack/Data/' + timestamp + '_' + 'copenhagen.csv')
 

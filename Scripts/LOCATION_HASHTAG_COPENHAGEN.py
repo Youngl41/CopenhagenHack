@@ -52,17 +52,17 @@ consumer_secret = "37txp8tG4aujvVlzJxO4amx6fH25dfzpS6UiBPBwDcwL8jHv9o"
 access_token = "1957759963-3s7YRnFDuhLl1bguOvoVl4jW7teuYLCuBENLas1"
 access_secret = 'Ehde1kXD2k68FwqvjMWrkiga4ulqhDNSKQk1CfTcKyjTy'
 
-raw_connection = getConnection()
+#raw_connection = getConnection()
 
 if __name__ == "__main__":
 
-#    
-#    # Create the DataBase
-#    database_create = "CREATE DATABASE copenhagen_hacking WITH OWNER = postgres ENCODING = 'UTF8' TABLESPACE = pg_default;"
-#    
-#    # Submit CREATE  database     
-#    submitToDatabase(database_create, (), raw_connection)
-#    raw_connection.close()
+    """
+    # Create the DataBase
+    database_create = "CREATE DATABASE copenhagen_hacking WITH OWNER = postgres ENCODING = 'UTF8' TABLESPACE = pg_default;"
+    
+    # Submit CREATE  database     
+    submitToDatabase(database_create, (), raw_connection)
+    raw_connection.close()
        
     # Create the Tables                                      
     tweet_table_create = "CREATE TABLE IF NOT EXISTS tweets (id serial PRIMARY KEY, user_id char(50) NOT NULL, text char(160) NOT NULL, URL char(160) NOT NULL, latitude float, longitude float, created_at bigint, retweet_count int NOT NULL, hashtags character varying (160));"
@@ -72,8 +72,9 @@ if __name__ == "__main__":
     database_connection = getDatabase("copenhagen_hacking")
     submitToDatabase(tweet_table_create, (), database_connection)
     submitToDatabase(twitter_users_create, (), database_connection)
-
-    # Create authentication for Twitter
+    """
+    
+    #Create authentication for Twitter
     oauth = OAuth(access_token, access_secret, consumer_key, consumer_secret)
     
     # Initiate the connection to Twitter Streaming API
@@ -162,7 +163,7 @@ if __name__ == "__main__":
             username = data['user']['name'].lower()
             username = unicodedata.normalize('NFKD', username).encode('ascii','ignore').strip('"')
             
-            
+            """
             # Set query values for tweets table
             values_tweets = userid, tweet_text, url, latitude, longitude, created_at, data['retweet_count'], hashtags
             query_tweets = "INSERT INTO tweets (user_id, text, URL, latitude, longitude, created_at, retweet_count, hashtags) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s);" 
@@ -175,7 +176,7 @@ if __name__ == "__main__":
             query_users = "INSERT INTO twitter_users (user_id, user_name, screen_name, followers_count, friends_count) VALUES (%s, %s, %s, %s, %s);" 
             submitToDatabase(query_users, values_users, database_connection)
             database_connection.close()
-
+            """
             
         except (RuntimeError, TypeError, NameError):
             pass
