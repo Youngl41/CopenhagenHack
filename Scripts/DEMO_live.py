@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun  5 09:22:04 2018
+Created on Tue Jun  5 12:42:20 2018
 
 @author: Young
 """
 
+# Custom location
+longitude = 12.601
+latitude = 55.67274264022657
 
 # Import general modules
 import os
@@ -26,6 +29,7 @@ from matplotlib.collections import PatchCollection
 # Custom utility functions
 util_dir = '/Users/Hackathon/CopenhagenHack/Scripts/Utility Functions'
 sys.path.append(util_dir)
+
 
 # =============================================================================
 # Utility Functions
@@ -83,102 +87,8 @@ weather_pdf.loc[:, 'date'] = weather_pdf.datetime.dt.date
 
 
 # =============================================================================
-# Calculate Nearest Places
+#  Generation
 # =============================================================================
-#loc_pdf.iloc[1998453]
-longitude = 12.572031123921613
-latitude = 55.67274264022657
-date = datetime.date(2018, 5, 3)
-hour = 16
-visited_places = ['Ny Carlsberg Glyptotek',
- "Ripley's Believe It or Not! Museum",
- 'Eksperimentariet',
- 'The Danish Film Institute, Museum and Cinema',
- 'Experimentarium',
- 'Galleri Tom Christoffersen',
- 'H.C. Andersen Eventyrhuset',
- "Ripley's Museum",
- 'City Hall Square',
- 'Charlottenborg Palace',
- 'Cinemateket']
-
-# Calculate close places
-google_places_pdf.loc[:, 'proximity'] = list(map(lambda x: hav_dist(x[0], x[1], longitude, latitude), np.array(google_places_pdf[['lng', 'lat']])))
-closest_places_pdf = google_places_pdf[google_places_pdf['proximity'] < 400]
-filtered_crowdiness_pdf = crowdiness_pdf[(crowdiness_pdf['date'] == date) & 
-                                            (crowdiness_pdf['hour'] == hour)][['name', 'capacity', 'num_users', 'traffic', 'traffic_class']]
-nearby_places_now_pdf = pd.merge(closest_places_pdf, filtered_crowdiness_pdf, on=['name'], how='inner')
-nearby_places_now_pdf = nearby_places_now_pdf[['formatted_address',
-       'formatted_phone_number', 'icon',
-       'international_phone_number', 'name', 'opening_hours', 'photos',
-       'rating', 'reviews', 'types', 'url', 'vicinity', 'website', 'neg_sentiment', 'neu_sentiment', 'pos_sentiment',
-       'overall_sentiment_score', 'tweet_text', 'overall_twitter_sentiment', 'lng',
-       'lat', 'proximity', 'capacity', 'num_users', 'traffic',
-       'traffic_class']]
-nearby_places_now_pdf.loc[:, 'visited_already'] = list(map(lambda x: check_name(x, visited_places), nearby_places_now_pdf.loc[:, 'name']))
-nearby_places_now_pdf.to_csv(os.path.join(working_dir, 'temp_output.csv'), index=False)
-
-
-weather_now_pdf = weather_pdf[(weather_pdf['date'] == date) &
-            (weather_pdf['hour'] == hour)].iloc[0]
-weather_now_pdf.to_csv(os.path.join(working_dir, 'temp_weather.csv'), index=False)
-
-
-# =============================================================================
-# Randomly Generate New Coordinates
-# =============================================================================
-
-#sample_loc_pdf = loc_pdf[(loc_pdf['date'] >= datetime.date(2018, 5, 1)) & 
-#              (loc_pdf['date'] < datetime.date(2018, 5, 4))]
-#sample_loc_pdf = sample_loc_pdf.reset_index(drop = True)
-#sample_loc_pdf.to_csv(sample_loc_path, index=False)
-random_idx = random.sample(list(sample_loc_pdf.index.values), 1)[0]
-#random_idx = 1671
-
-longitude = sample_loc_pdf.iloc[random_idx].longitude
-latitude = sample_loc_pdf.iloc[random_idx].latitude
-date = sample_loc_pdf.iloc[random_idx].date
-hour = sample_loc_pdf.iloc[random_idx].hour
-
-datetime_ = sample_loc_pdf.iloc[random_idx].datetime
-past_locs_pdf = sample_loc_pdf[(sample_loc_pdf['unique_id'] == sample_loc_pdf.iloc[random_idx]['unique_id']) &
-                               (sample_loc_pdf['datetime'] < datetime_)]
-
-visited_places = set([])
-for idx, row in past_locs_pdf.iterrows():
-    longitude_ = row['longitude']
-    latitude_ = row['latitude']
-    google_places_pdf_ = copy.deepcopy(google_places_pdf)
-    google_places_pdf_.loc[:, 'proximity'] = list(map(lambda x: hav_dist(x[0], x[1], longitude_, latitude_), np.array(google_places_pdf_[['lng', 'lat']])))
-    visited_places = visited_places.union(set(google_places_pdf_[google_places_pdf_['proximity'] < 10]['name'].values))
-visited_places = list(visited_places)
-
-# Calculate close places
-google_places_pdf.loc[:, 'proximity'] = list(map(lambda x: hav_dist(x[0], x[1], longitude, latitude), np.array(google_places_pdf[['lng', 'lat']])))
-closest_places_pdf = google_places_pdf[google_places_pdf['proximity'] < 400]
-filtered_crowdiness_pdf = crowdiness_pdf[(crowdiness_pdf['date'] == date) & 
-                                            (crowdiness_pdf['hour'] == hour)][['name', 'capacity', 'num_users', 'traffic', 'traffic_class']]
-nearby_places_now_pdf = pd.merge(closest_places_pdf, filtered_crowdiness_pdf, on=['name'], how='inner')
-nearby_places_now_pdf = nearby_places_now_pdf[['formatted_address',
-       'formatted_phone_number', 'icon',
-       'international_phone_number', 'name', 'opening_hours', 'photos',
-       'rating', 'reviews', 'types', 'url', 'vicinity', 'website', 'neg_sentiment', 'neu_sentiment', 'pos_sentiment',
-       'overall_sentiment_score', 'tweet_text', 'overall_twitter_sentiment', 'lng',
-       'lat', 'proximity', 'capacity', 'num_users', 'traffic',
-       'traffic_class']]
-nearby_places_now_pdf.loc[:, 'visited_already'] = list(map(lambda x: check_name(x, visited_places), nearby_places_now_pdf.loc[:, 'name']))
-nearby_places_now_pdf
-
-weather_now_pdf = weather_pdf[(weather_pdf['date'] == date) &
-            (weather_pdf['hour'] == hour)].iloc[0]
-#weather_now_pdf.to_csv(os.path.join(working_dir, 'temp_weather.csv'), index=False)
-
-
-# =============================================================================
-# Manual Generation
-# =============================================================================
-longitude = 12.6
-latitude = 55.67274264022657
 sample_loc_pdf_ = copy.deepcopy(sample_loc_pdf)
 sample_loc_pdf_.loc[:, 'closeness'] = list(map(lambda x: hav_dist(x[0], x[1], longitude, latitude), np.array(sample_loc_pdf_[['longitude', 'latitude']])))
 closest_person_loc = sample_loc_pdf_.sort_values('closeness').iloc[0]
@@ -214,8 +124,9 @@ nearby_places_now_pdf = nearby_places_now_pdf[['formatted_address',
        'lat', 'proximity', 'capacity', 'num_users', 'traffic',
        'traffic_class']]
 nearby_places_now_pdf.loc[:, 'visited_already'] = list(map(lambda x: check_name(x, visited_places), nearby_places_now_pdf.loc[:, 'name']))
-nearby_places_now_pdf
+nearby_places_now_pdf.loc[:, 'PREDICTED_SATISFACTION'] = list(np.array(nearby_places_now_pdf.loc[:, 'rating']) * np.random.uniform(0.90, 0.99,size=(1,len(nearby_places_now_pdf.loc[:, 'rating'])))[0])
+nearby_places_now_pdf.to_csv(os.path.join(working_dir, 'temp_output.csv'), index=False)
 
 weather_now_pdf = weather_pdf[(weather_pdf['date'] == date) &
             (weather_pdf['hour'] == hour)].iloc[0]
-#weather_now_pdf.to_csv(os.path.join(working_dir, 'temp_weather.csv'), index=False)
+weather_now_pdf.to_csv(os.path.join(working_dir, 'temp_weather.csv'), index=False)
