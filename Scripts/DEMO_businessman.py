@@ -92,6 +92,8 @@ latitude = 55.6807294
 date = datetime.date(2018, 5, 1)
 hour = 15
 visited_places = ['City Tour, Pub Crow']
+segment = 'Businessman'
+num_places_visited = len(visited_places)
 
 # Calculate close places
 google_places_pdf.loc[:, 'proximity'] = list(map(lambda x: hav_dist(x[0], x[1], longitude, latitude), np.array(google_places_pdf[['lng', 'lat']])))
@@ -109,7 +111,9 @@ nearby_places_now_pdf = nearby_places_now_pdf[['formatted_address',
 nearby_places_now_pdf.loc[:, 'visited_already'] = list(map(lambda x: check_name(x, visited_places), nearby_places_now_pdf.loc[:, 'name']))
 nearby_places_now_pdf.loc[:, 'PREDICTED_SATISFACTION'] = list(np.array(nearby_places_now_pdf.loc[:, 'rating']) * np.random.uniform(0.90, 0.99,size=(1,len(nearby_places_now_pdf.loc[:, 'rating'])))[0])
 nearby_places_now_pdf.to_csv(os.path.join(working_dir, 'temp_output.csv'), index=False)
-
+person_metadata = pd.DataFrame([longitude, latitude, date, hour, segment, num_places_visited]).transpose()
+person_metadata.columns = ['longitude', 'latitude', 'date', 'hour', 'segment', 'num_places_visited']
+person_metadata.to_csv(os.path.join(working_dir, 'temp_person_coord.csv'), index=False)
 
 weather_now_pdf = weather_pdf[(weather_pdf['date'] == date) &
             (weather_pdf['hour'] == hour)].iloc[0]
