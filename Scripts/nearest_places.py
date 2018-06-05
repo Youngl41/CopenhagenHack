@@ -45,14 +45,13 @@ from munge_util import chunk_items
 # =============================================================================
 # Paths
 main_dir = '/Users/Hackathon/CopenhagenHack/Data/Copenhagen-shp/shape'
-data_dir = '/Users/Hackathon/CopenhagenHack/Data'
 working_dir = '/Users/Hackathon/CopenhagenHack/Data/Working'
 
 #loc_path = os.path.join(data_dir, 'clean_loc.csv')
-google_places_path = os.path.join(data_dir, 'clean_google_places.csv')#os.path.join(data_dir, 'google_places_details.csv')
+google_places_path = os.path.join(working_dir, 'clean_google_places.csv')
 crowdiness_path = os.path.join(working_dir, 'crowdiness.csv')
 sample_loc_path = os.path.join(working_dir, 'sample_loc.csv')
-weather_path = os.path.join(data_dir, 'clean_weather_hist.csv')
+weather_path = os.path.join(working_dir, 'clean_weather_hist.csv')
 
 sample_loc_pdf = pd.read_csv(sample_loc_path, parse_dates=['date'])
 #loc_pdf = pd.read_csv(loc_path, parse_dates=['date'])
