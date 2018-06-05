@@ -134,7 +134,7 @@ if __name__ == '__main__':
     output = output.reset_index(drop = True)
 
     # Concatenate with twitter dataframe
-    sentiment_df = pd.concat([twitter_df, output], axis = 1)
+    sentiment_df_twitter = pd.concat([twitter_df, output], axis = 1)
     
     
-    sentiment_df.to_csv('/Users/Hackathon/CopenhagenHack/Data/'+os.path.basename(input_file).split('_')[0] + '_sentiment.csv')
+    sentiment_df_twitter.to_csv('/Users/Hackathon/CopenhagenHack/Data/'+os.path.basename(input_file).split('_')[0] + '_sentiment_twitter.csv')
