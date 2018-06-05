@@ -115,12 +115,12 @@ nearby_places_now_pdf = nearby_places_now_pdf[['formatted_address',
        'lat', 'proximity', 'capacity', 'num_users', 'traffic',
        'traffic_class']]
 nearby_places_now_pdf.loc[:, 'visited_already'] = list(map(lambda x: check_name(x, visited_places), nearby_places_now_pdf.loc[:, 'name']))
-nearby_places_now_pdf
+nearby_places_now_pdf.to_csv(os.path.join(working_dir, 'temp_output.csv'), index=False)
 
 
 weather_now_pdf = weather_pdf[(weather_pdf['date'] == date) &
             (weather_pdf['hour'] == hour)].iloc[0]
-weather_now_pdf
+weather_now_pdf.to_csv(os.path.join(working_dir, 'temp_weather.csv'), index=False)
 
 
 # =============================================================================
