@@ -56,20 +56,20 @@ raw_connection = getConnection()
 
 if __name__ == "__main__":
 
-    
-    # Create the DataBase
-    database_create = "CREATE DATABASE copenhagen_hack WITH OWNER = mia ENCODING = 'UTF8' TABLESPACE = pg_default;"
-    
-    # Submit CREATE  database     
-    submitToDatabase(database_create, (), raw_connection)
-    raw_connection.close()
+#    
+#    # Create the DataBase
+#    database_create = "CREATE DATABASE copenhagen_hacking WITH OWNER = postgres ENCODING = 'UTF8' TABLESPACE = pg_default;"
+#    
+#    # Submit CREATE  database     
+#    submitToDatabase(database_create, (), raw_connection)
+#    raw_connection.close()
        
     # Create the Tables                                      
     tweet_table_create = "CREATE TABLE IF NOT EXISTS tweets (id serial PRIMARY KEY, user_id char(50) NOT NULL, text char(160) NOT NULL, URL char(160) NOT NULL, latitude float, longitude float, created_at bigint, retweet_count int NOT NULL, hashtags character varying (160));"
     twitter_users_create = "CREATE TABLE IF NOT EXISTS twitter_users (id serial PRIMARY KEY, user_id char(50) NOT NULL, user_name char(50) NOT NULL, screen_name char(50) NOT NULL, followers_count int NOT NULL, friends_count int NOT NULL);"
     
     # Submit CREATE tables
-    database_connection = getDatabase("copenhagen_hack")
+    database_connection = getDatabase("copenhagen_hacking")
     submitToDatabase(tweet_table_create, (), database_connection)
     submitToDatabase(twitter_users_create, (), database_connection)
 
@@ -105,15 +105,14 @@ if __name__ == "__main__":
             backup_data = backup_data.lower()
         
             # Print the tweets so you see something happening
-            
-            if 'copenhagen' in backup_data: 
-                print (backup_data)
-                # Open file and dump data into it
-                with open('/Users/Hackathon/CopenhagenHack/Data/' + timestamp + '_' + 'copenhagen.txt', 'a') as outfile:
-                    outfile.write(backup_data + '\n')
-            
-                # Close file to avoid conflict
-                outfile.close()
+            print (backup_data)
+
+            # Open file and dump data into it
+            with open('/Users/Hackathon/CopenhagenHack/Data/' + timestamp + '_' + 'copenhagen.txt', 'a') as outfile:
+                outfile.write(backup_data + '\n')
+        
+            # Close file to avoid conflict
+            outfile.close()
         
             # Create timeline of tweets for database
             timelineTweetsJson = json.dumps(tweet)
@@ -139,7 +138,7 @@ if __name__ == "__main__":
             # Obtain hashtags
             if data['entities']['hashtags'] !=[]:
                 hashtags = [];
-                for i in range(0,len(data['entities']['hashtags'])):              
+                for i in range(0,len(data['entities']['hashtags'])):
                     hashtags.append(data['entities']['hashtags'][i]['text'].lower())
             else:
                 hashtags = str('')
@@ -168,13 +167,15 @@ if __name__ == "__main__":
             values_tweets = userid, tweet_text, url, latitude, longitude, created_at, data['retweet_count'], hashtags
             query_tweets = "INSERT INTO tweets (user_id, text, URL, latitude, longitude, created_at, retweet_count, hashtags) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s);" 
             submitToDatabase(query_tweets, values_tweets, database_connection)
-                
+            database_connection.close()
+
                 
             # Set query values for user table
             values_users = userid, username, data['user']['screen_name'], data['user']['followers_count'], data['user']['friends_count']
             query_users = "INSERT INTO twitter_users (user_id, user_name, screen_name, followers_count, friends_count) VALUES (%s, %s, %s, %s, %s);" 
             submitToDatabase(query_users, values_users, database_connection)
-            
+            database_connection.close()
+
             
         except (RuntimeError, TypeError, NameError):
             pass
