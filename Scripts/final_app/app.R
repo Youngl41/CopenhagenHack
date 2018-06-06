@@ -95,14 +95,6 @@ server <- function(input, output) {
                      stroke = FALSE, 
                      fillOpacity = 0.5,
                      color = "grey",
-                     clusterOptions = markerClusterOptions(iconCreateFunction =
-                                                              JS("
-                                                                function(cluster) {
-                                                               return new L.DivIcon({
-                                                              html: '<div style=\"background-color:rgba(77,77,77,0.5)\"><span>' + cluster.getChildCount() + '</div><span>',
-                                                             className: 'marker-cluster'
-                                                            });
-                                                           }")), 
                      places$lng, 
                      places$lat, 
                      popup = paste(sep = "<br/>",
