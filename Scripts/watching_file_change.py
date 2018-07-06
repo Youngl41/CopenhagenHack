@@ -5,6 +5,7 @@ Created on Tue Jun  5 12:42:20 2018
 
 @author: Young
 """
+
 # Import general modules
 import os
 import sys
@@ -62,31 +63,9 @@ util_dir = '/Users/Hackathon/CopenhagenHack/Scripts/Utility Functions'
 sys.path.append(util_dir)
 
 
-#loc_path = os.path.join(data_dir, 'clean_loc.csv')
-google_places_path = os.path.join(working_dir, 'clean_google_places.csv')
-crowdiness_path = os.path.join(working_dir, 'crowdiness.csv')
-sample_loc_path = os.path.join(working_dir, 'sample_loc.csv')
-weather_path = os.path.join(working_dir, 'clean_weather_hist.csv')
-google_restaurants_path = os.path.join(working_dir, 'clean_google_restaurant.csv')
 
-sample_loc_pdf = pd.read_csv(sample_loc_path, parse_dates=['date'])
-#loc_pdf = pd.read_csv(loc_path, parse_dates=['date'])
-google_places_pdf = pd.read_csv(google_places_path)
-crowdiness_pdf = pd.read_csv(crowdiness_path)
-weather_pdf = pd.read_csv(weather_path)
-google_rest_pdf = pd.read_csv(google_restaurants_path)
 
-# Location data
-#loc_polys = list(map(lambda x: Point(x[0], x[1]), np.array(loc_pdf[['longitude', 'latitude']])))
-sample_loc_pdf.loc[:, 'date'] = pd.to_datetime(sample_loc_pdf.date).dt.date
-crowdiness_pdf.loc[:, 'date'] = pd.to_datetime(crowdiness_pdf.date).dt.date
 
-# Weather data
-weather_pdf.loc[:, 'datetime'] = pd.to_datetime(weather_pdf.time_tuple)
-weather_pdf.loc[:, 'hour'] = weather_pdf.datetime.dt.hour
-weather_pdf.loc[:, 'date'] = weather_pdf.datetime.dt.date
-            
-            
 class Watcher:
     DIRECTORY_TO_WATCH = working_dir
 
@@ -119,18 +98,49 @@ class Handler(FileSystemEventHandler):
             print ("Received created event - %s." % event.src_path )
             print('hello new file')
 
-        elif event.event_type == 'modified':
+        elif (event.event_type == 'modified') and (str(event.src_path) == '/Users/Hackathon/CopenhagenHack/Working/clicked_coordinates.csv'):
+            
             # Taken any action here when a file is modified.
             print ("Received modified event - %s." % event.src_path)
+            #loc_path = os.path.join(data_dir, 'clean_loc.csv')
+            google_places_path = os.path.join(working_dir, 'clean_google_places.csv')
+            crowdiness_path = os.path.join(working_dir, 'crowdiness.csv')
+            sample_loc_path = os.path.join(working_dir, 'sample_loc.csv')
+            weather_path = os.path.join(working_dir, 'clean_weather_hist.csv')
+            google_restaurants_path = os.path.join(working_dir, 'clean_google_restaurant.csv')
+            r_path = os.path.join(working_dir, 'clicked_coordinates.csv')
             
-            longitude = 12.62 #12.6012#
-            latitude = 55.68 #55.67274264022657#
+            sample_loc_pdf = pd.read_csv(sample_loc_path, parse_dates=['date'])
+            #loc_pdf = pd.read_csv(loc_path, parse_dates=['date'])
+            google_places_pdf = pd.read_csv(google_places_path)
+            crowdiness_pdf = pd.read_csv(crowdiness_path)
+            weather_pdf = pd.read_csv(weather_path)
+            google_rest_pdf = pd.read_csv(google_restaurants_path)
+            r_coordinates_df = pd.read_csv(r_path)
+
+            
+            # Location data
+            #loc_polys = list(map(lambda x: Point(x[0], x[1]), np.array(loc_pdf[['longitude', 'latitude']])))
+            sample_loc_pdf.loc[:, 'date'] = pd.to_datetime(sample_loc_pdf.date).dt.date
+            crowdiness_pdf.loc[:, 'date'] = pd.to_datetime(crowdiness_pdf.date).dt.date
+            
+            # Weather data
+            weather_pdf.loc[:, 'datetime'] = pd.to_datetime(weather_pdf.time_tuple)
+            weather_pdf.loc[:, 'hour'] = weather_pdf.datetime.dt.hour
+            weather_pdf.loc[:, 'date'] = weather_pdf.datetime.dt.date
+            
+            
+            
+            sample_loc_pdf_ = copy.deepcopy(sample_loc_pdf)
+            longitude = r_coordinates_df['lng'][0]
+            print(longitude)
+            latitude = r_coordinates_df['lat'][0]
             
             
 # =============================================================================
 #  Generation
 # =============================================================================
-            sample_loc_pdf_ = copy.deepcopy(sample_loc_pdf)
+            
             sample_loc_pdf_.loc[:, 'closeness'] = list(map(lambda x: hav_dist(x[0], x[1], longitude, latitude), np.array(sample_loc_pdf_[['longitude', 'latitude']])))
             closest_person_loc = sample_loc_pdf_.sort_values('closeness').iloc[0]
             
