@@ -98,7 +98,7 @@ class Handler(FileSystemEventHandler):
             print ("Received created event - %s." % event.src_path )
             print('hello new file')
 
-        elif (event.event_type == 'modified') and (str(event.src_path) == '/Users/Hackathon/CopenhagenHack/Working/clicked_coordinates.csv'):
+        elif (event.event_type == 'modified') and (event.src_path == '/Users/Hackathon/CopenhagenHack/Working/clicked_coordinates.csv'):
             
             # Taken any action here when a file is modified.
             print ("Received modified event - %s." % event.src_path)
