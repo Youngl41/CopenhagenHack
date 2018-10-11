@@ -23,7 +23,7 @@ ui <- fluidPage(
   
   
   # Application title
-  titlePanel("Copenhagen GitHub"),
+  titlePanel("Copenhagen Hackathon"),
   sidebarLayout(
     sidebarPanel(
       verbatimTextOutput("click_info")
@@ -37,16 +37,16 @@ ui <- fluidPage(
               DT::dataTableOutput("attractions_table")),
     
     position = c("right")
-    ),
+  ),
   
   tags$style(type="text/css",
              ".shiny-output-error { visibility: hidden; }",
              ".shiny-output-error:before { visibility: hidden; }"
   )
-  )
-  
-  # Show a plot of the generated distribution
-  
+)
+
+# Show a plot of the generated distribution
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
@@ -57,41 +57,50 @@ server <- function(input, output, session) {
   
   places <-  read_csv('/Users/GitHub/CopenhagenHack/Working/clean_google_places.csv')
   places <- data.frame(places)
-   
+  
+  start_clicked_coordinates <- as.data.frame(cbind(person$latitude, person$longitude))
+  names(start_clicked_coordinates)[1] <- "lat"
+  names(start_clicked_coordinates)[2] <- "lng"
+  
+  
   map <- leaflet() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
     addMouseCoordinates(style = "basic") %>%
     setView(lng = 12.58432, lat = 55.67821,  zoom = 13) %>%
     addMarkers(
-        lat = 55.67274264022657,
-        lng = 12.6012, popup = paste(sep = "<br/>",
-                                                 paste('Customer segment: ', person$segment, sep = ""), 
-                                                 paste('Number visited: ', person$num_places_visited, sep = ""),
-                                                 paste('Date: ', person$date, sep = ""),
-                                                 paste('Hour: ', person$hour, sep = "")
-        )) %>%
-      addCircleMarkers(
-        radius = 5,
-        stroke = FALSE, 
-        fillOpacity = 0.5,
-        color = "grey",
-        places$lng, 
-        places$lat, 
-        popup = paste(sep = "<br/>",
-                      paste("<b><a href='", places$website, "'>", places$name, "</a></b>", sep = ""),
-                      paste("Address:", places$formatted_address),
-                      paste('Rating: ', places$rating, sep = ""),
-                      paste('Overall Sentiment: ', round(places$overall_sentiment_score, 1), sep = ""),
-                      paste('Tweets: ', places$tweet_text, sep = "")))
+      lat = 55.67274264022657,
+      lng = 12.6012, popup = paste(sep = "<br/>",
+                                   paste('Customer segment: ', person$segment, sep = ""), 
+                                   paste('Number visited: ', person$num_places_visited, sep = ""),
+                                   paste('Date: ', person$date, sep = ""),
+                                   paste('Hour: ', person$hour, sep = "")
+      )) %>%
+    addCircleMarkers(
+      radius = 5,
+      stroke = FALSE, 
+      fillOpacity = 0.5,
+      color = "grey",
+      places$lng, 
+      places$lat, 
+      popup = paste(sep = "<br/>",
+                    paste("<b><a href='", places$website, "'>", places$name, "</a></b>", sep = ""),
+                    paste("Address:", places$formatted_address),
+                    paste('Rating: ', places$rating, sep = ""),
+                    paste('Overall Sentiment: ', round(places$overall_sentiment_score, 1), sep = ""),
+                    paste('Tweets: ', places$tweet_text, sep = "")))
   
   
   output$myMap = renderLeaflet(map)
+
   
   clicked_place <- observe({
     p1 <- input$myMap_click
     write.csv(as.data.frame(p1), "/Users/GitHub/CopenhagenHack/Working/clicked_coordinates.csv")
   })
   
+
+
+
   output$click_info <- renderPrint({
     cat("Map Click Coordinates:\n")
     as.data.frame(input$myMap_click)[c("lat", "lng")]
@@ -103,10 +112,10 @@ server <- function(input, output, session) {
       addMarkers(
         lat = as.data.frame(input$myMap_click)$lat,
         lng = as.data.frame(input$myMap_click)$lng, popup = paste(sep = "<br/>",
-                                                 paste('Customer segment: ', person$segment, sep = ""), 
-                                                 paste('Number visited: ', person$num_places_visited, sep = ""),
-                                                 paste('Date: ', person$date, sep = ""),
-                                                 paste('Hour: ', person$hour, sep = "")
+                                                                  paste('Customer segment: ', person$segment, sep = ""), 
+                                                                  paste('Number visited: ', person$num_places_visited, sep = ""),
+                                                                  paste('Date: ', person$date, sep = ""),
+                                                                  paste('Hour: ', person$hour, sep = "")
         )) %>%
       addCircleMarkers(
         radius = 5,
@@ -191,7 +200,7 @@ server <- function(input, output, session) {
                        ))
     
   })
-
+  
 }
 
 
