@@ -55,11 +55,11 @@ def check_name(name, list_of_names):
 # =============================================================================
 
 # Paths
-main_dir = '/Users/Hackathon/CopenhagenHack/Data/Copenhagen-shp/shape'
-working_dir = '/Users/Hackathon/CopenhagenHack/Working'
+main_dir = '/Users/GitHub/CopenhagenHack/Data/Copenhagen-shp/shape'
+working_dir = '/Users/GitHub/CopenhagenHack/Working'
 
 # Custom utility functions
-util_dir = '/Users/Hackathon/CopenhagenHack/Scripts/Utility Functions'
+util_dir = '/Users/GitHub/CopenhagenHack/Scripts/Utility Functions'
 sys.path.append(util_dir)
 
 
@@ -98,7 +98,7 @@ class Handler(FileSystemEventHandler):
             print ("Received created event - %s." % event.src_path )
             print('hello new file')
 
-        elif (event.event_type == 'modified') and (event.src_path == '/Users/Hackathon/CopenhagenHack/Working/clicked_coordinates.csv'):
+        elif (event.event_type == 'modified') and (event.src_path == working_dir+'/clicked_coordinates.csv'):
             
             # Taken any action here when a file is modified.
             print ("Received modified event - %s." % event.src_path)
@@ -132,9 +132,8 @@ class Handler(FileSystemEventHandler):
             
             
             sample_loc_pdf_ = copy.deepcopy(sample_loc_pdf)
-            longitude = r_coordinates_df['lng'][0]
-            print(longitude)
-            latitude = r_coordinates_df['lat'][0]
+            longitude = float(r_coordinates_df['lng'][0])
+            latitude = float(r_coordinates_df['lat'][0])
             
             
 # =============================================================================

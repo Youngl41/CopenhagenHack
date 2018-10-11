@@ -15,6 +15,7 @@ library(dplyr)
 library(htmltools)
 library(rgdal)
 library(mapview)
+library(DT)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -22,13 +23,18 @@ ui <- fluidPage(
   
   
   # Application title
-  titlePanel("Copenhagen Hackathon"),
+  titlePanel("Copenhagen GitHub"),
   sidebarLayout(
     sidebarPanel(
       verbatimTextOutput("click_info")
+      
     ),
-    mainPanel(leafletOutput("myMap"),
-              actionButton("updatecoord", "Find Me Attractions!")),
+    mainPanel(leafletOutput("myMap", height=700),
+              p(),
+              actionButton("updatecoord", "Find Me Attractions!", icon("paper-plane"), 
+                           style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+              p(),
+              DT::dataTableOutput("attractions_table")),
     
     position = c("right")
     ),
@@ -46,21 +52,16 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
-  person <- read_csv('/Users/Hackathon/CopenhagenHack/Working/temp_person_coord.csv', col_types = ('ddcccd'))
+  person <- read_csv('/Users/GitHub/CopenhagenHack/Working/temp_person_coord.csv', col_types = ('ddcccd'))
   person <- data.frame(person)
   
-  coordinates <-  read_csv('/Users/Hackathon/CopenhagenHack/Working/temp_output.csv', col_names = TRUE)
-  
-  coordinates <- data.frame(coordinates)
-  
-  places <-  read_csv('/Users/Hackathon/CopenhagenHack/Working/clean_google_places.csv', col_names = TRUE)
+  places <-  read_csv('/Users/GitHub/CopenhagenHack/Working/clean_google_places.csv')
   places <- data.frame(places)
-  	
-  map <- reactive({
-    leaflet() %>%
+   
+  map <- leaflet() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
     addMouseCoordinates(style = "basic") %>%
-    setView(lng = 12.6012, lat = 55.67274264022657, zoom = 15) %>%
+    setView(lng = 12.58432, lat = 55.67821,  zoom = 13) %>%
     addMarkers(
         lat = 55.67274264022657,
         lng = 12.6012, popup = paste(sep = "<br/>",
@@ -77,22 +78,18 @@ server <- function(input, output, session) {
         places$lng, 
         places$lat, 
         popup = paste(sep = "<br/>",
-                      paste("<b><a href='", coordinates$website, "'>", coordinates$name, "</a></b>", sep = ""),
-                      paste('Rating: ', coordinates$rating, sep = ""),
-                      paste('Availability: ', coordinates$traffic_class, sep = ""),
-                      paste('Visited: ', coordinates$visited_already, sep = ""),
-                      paste('Proximity: ', round(coordinates$proximity, 0), ' m', sep = ""),
-                      paste('Overall Sentiment: ', round(coordinates$overall_sentiment_score, 1), sep = ""),
-                      paste('Traffic: ', coordinates$traffic, sep = ""),
-                      paste('Tweets: ', coordinates$tweet_text, sep = "")))
-  })
+                      paste("<b><a href='", places$website, "'>", places$name, "</a></b>", sep = ""),
+                      paste("Address:", places$formatted_address),
+                      paste('Rating: ', places$rating, sep = ""),
+                      paste('Overall Sentiment: ', round(places$overall_sentiment_score, 1), sep = ""),
+                      paste('Tweets: ', places$tweet_text, sep = "")))
   
   
-  output$myMap = renderLeaflet(map())
+  output$myMap = renderLeaflet(map)
   
   clicked_place <- observe({
     p1 <- input$myMap_click
-    write.csv(as.data.frame(p1), "/Users/Hackathon/CopenhagenHack/Working/clicked_coordinates.csv")
+    write.csv(as.data.frame(p1), "/Users/GitHub/CopenhagenHack/Working/clicked_coordinates.csv")
   })
   
   output$click_info <- renderPrint({
@@ -119,40 +116,37 @@ server <- function(input, output, session) {
         places$lng, 
         places$lat, 
         popup = paste(sep = "<br/>",
-                      paste("<b><a href='", coordinates$website, "'>", coordinates$name, "</a></b>", sep = ""),
-                      paste('Rating: ', coordinates$rating, sep = ""),
-                      paste('Availability: ', coordinates$traffic_class, sep = ""),
-                      paste('Visited: ', coordinates$visited_already, sep = ""),
-                      paste('Proximity: ', round(coordinates$proximity, 0), ' m', sep = ""),
-                      paste('Overall Sentiment: ', round(coordinates$overall_sentiment_score, 1), sep = ""),
-                      paste('Traffic: ', coordinates$traffic, sep = ""),
-                      paste('Tweets: ', coordinates$tweet_text, sep = "")))
+                      paste("<b><a href='", places$website, "'>", places$name, "</a></b>", sep = ""),
+                      paste("Address:", places$formatted_address),
+                      paste('Rating: ', places$rating, sep = ""),
+                      paste('Overall Sentiment: ', round(places$overall_sentiment_score, 1), sep = ""),
+                      paste('Tweets: ', places$tweet_text, sep = "")))
   })
   
+  
+  attractions <- eventReactive(input$updatecoord, {
+    new_coordinates <- read_csv('/Users/GitHub/CopenhagenHack/Working/temp_output.csv')
+    if (dim(new_coordinates)[1] == 0) {
+      new_coordinates <- read_csv('/Users/GitHub/CopenhagenHack/Working/default_locations.csv')
+    }
+    new_coordinates
+  })
+  
+  cols = c("name", "rating", "formatted_address", "international_phone_number", "proximity")
+  
+  output$attractions_table <- DT::renderDataTable({
+    datatable(
+      arrange(attractions()[cols], proximity) %>% mutate(proximity = paste(round(proximity, 0), ' m', sep = "")),
+      filter = 'top',
+      colnames=c("Name", "Rating", "Address", "Phone Number","Proximity")
+    )
+  })
+  
+  
   observeEvent(input$updatecoord, {
-    new_coordinates <- reactiveFileReader(100, session, '/Users/Hackathon/CopenhagenHack/Working/temp_output.csv', read.csv)
+    person <- read_csv('/Users/GitHub/CopenhagenHack/Working/temp_person_coord.csv', col_types = ('ddcccd'))
     leafletProxy("myMap") %>%
       clearMarkers() %>%
-      addCircleMarkers(radius = 5,
-                       stroke = FALSE, 
-                       fillOpacity = 0.5,
-                       color = "red",
-                       new_coordinates()$lng, 
-                       new_coordinates()$lat, 
-                       popup = paste(sep = "<br/>",
-                                     paste("<b><a href='", 
-                                           coordinates$website, 
-                                           "'>", 
-                                           coordinates$name, 
-                                           "</a></b>", sep = ""),
-                                     paste('Rating: ', new_coordinates()$rating, sep = ""),
-                                     paste('Availability: ', new_coordinates()$traffic_class, sep = ""),
-                                     paste('Visited: ', new_coordinates()$visited_already, sep = ""),
-                                     paste('Proximity: ', round(new_coordinates()$proximity, 0), ' m', sep = ""),
-                                     paste('Overall Sentiment: ', round(new_coordinates()$overall_sentiment_score, 1), sep = ""),
-                                     paste('Traffic: ', new_coordinates()$traffic, sep = ""),
-                                     paste('Tweets: ', new_coordinates()$tweet_text, sep = "")
-                       )) %>%
       addMarkers(
         lat = as.data.frame(input$myMap_click)$lat,
         lng = as.data.frame(input$myMap_click)$lng, popup = paste(sep = "<br/>",
@@ -169,19 +163,35 @@ server <- function(input, output, session) {
         places$lng, 
         places$lat, 
         popup = paste(sep = "<br/>",
-                      paste("<b><a href='", coordinates$website, "'>", coordinates$name, "</a></b>", sep = ""),
-                      paste('Rating: ', coordinates$rating, sep = ""),
-                      paste('Availability: ', coordinates$traffic_class, sep = ""),
-                      paste('Visited: ', coordinates$visited_already, sep = ""),
-                      paste('Proximity: ', round(coordinates$proximity, 0), ' m', sep = ""),
-                      paste('Overall Sentiment: ', round(coordinates$overall_sentiment_score, 1), sep = ""),
-                      paste('Traffic: ', coordinates$traffic, sep = ""),
-                      paste('Tweets: ', coordinates$tweet_text, sep = "")))
+                      paste("<b><a href='", places$website, "'>", places$name, "</a></b>", sep = ""),
+                      paste("Address:", places$formatted_address),
+                      paste('Rating: ', places$rating, sep = ""),
+                      paste('Overall Sentiment: ', round(places$overall_sentiment_score, 1), sep = ""),
+                      paste('Tweets: ', places$tweet_text, sep = ""))) %>%
+      
+      addCircleMarkers(radius = 5,
+                       stroke = FALSE, 
+                       fillOpacity = 0.8,
+                       color = "red",
+                       attractions()$lng, 
+                       attractions()$lat, 
+                       popup = paste(sep = "<br/>",
+                                     paste("<b><a href='", 
+                                           attractions()$website, 
+                                           "'>", 
+                                           attractions()$name, 
+                                           "</a></b>", sep = ""),
+                                     paste('Rating: ', attractions()$rating, sep = ""),
+                                     paste('Availability: ', attractions()$traffic_class, sep = ""),
+                                     paste('Visited: ', attractions()$visited_already, sep = ""),
+                                     paste('Proximity: ', round(attractions()$proximity, 0), ' m', sep = ""),
+                                     paste('Overall Sentiment: ', round(attractions()$overall_sentiment_score, 1), sep = ""),
+                                     paste('Traffic: ', attractions()$traffic, sep = ""),
+                                     paste('Tweets: ', attractions()$tweet_text, sep = "")
+                       ))
     
   })
-  
 
-  
 }
 
 

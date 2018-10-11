@@ -45,16 +45,16 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
-  person <- read_csv('/Users/Hackathon/CopenhagenHack/Working/temp_person_coord.csv', col_types = ('ddcccd'))
+  person <- read_csv('/Users/GitHub/CopenhagenHack/Working/temp_person_coord.csv', col_types = ('ddcccd'))
   person <- data.frame(person)
   
-  coordinates <-  read_csv('/Users/Hackathon/CopenhagenHack/Working/temp_output.csv', col_names = TRUE)
+  coordinates <-  read_csv('/Users/GitHub/CopenhagenHack/Working/temp_output.csv', col_names = TRUE)
   
-  new_coordinates <- reactiveFileReader(100, session, '/Users/Hackathon/CopenhagenHack/Working/temp_output.csv', read.csv)
+  new_coordinates <- reactiveFileReader(100, session, '/Users/GitHub/CopenhagenHack/Working/temp_output.csv', read.csv)
   
   coordinates <- data.frame(coordinates)
   
-  places <-  read_csv('/Users/Hackathon/CopenhagenHack/Working/clean_google_places.csv', col_names = TRUE)
+  places <-  read_csv('/Users/GitHub/CopenhagenHack/Working/clean_google_places.csv', col_names = TRUE)
   places <- data.frame(places)
   	
   map <- reactive({
@@ -94,7 +94,7 @@ server <- function(input, output, session) {
   
   clicked_place <- observe({
     p1 <- input$myMap_click
-    write.csv(as.data.frame(p1), "/Users/Hackathon/CopenhagenHack/Working/clicked_coordinates.csv")
+    write.csv(as.data.frame(p1), "/Users/GitHub/CopenhagenHack/Working/clicked_coordinates.csv")
   })
   
   output$click_info <- renderPrint({
